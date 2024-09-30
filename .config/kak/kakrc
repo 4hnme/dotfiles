@@ -1,0 +1,60 @@
+colorscheme meliora
+
+# make (half)page jumps move less disorienting by keeping cursor in the middle
+map global insert <c-esc> ':wq<ret>'
+map global normal <c-esc> ':wq<ret>'
+
+# simple movement in insert mode
+map global insert <c-h> '<a-;>h'
+map global insert <c-l> '<a-;>l'
+# map global insert <c-j> '<a-;>j' <- doesn't work because <c-j> is <ret>
+# map global insert <c-k> '<a-;>k'
+map global normal Y     '<a-|>xclip -i -selection clipboard<ret>:echo -markup "{Information}yanked %val{selection_count} selections to system clipboard"<ret>'
+
+# user menu inspired by my helix config
+declare-user-mode space
+map global space a     ':lsp-code-actions<ret>'                                                               -docstring 'code action (LSP)'
+map global space k     ':lsp-hover<ret>'                                                                      -docstring 'show info (LSP)'
+map global space K     ':lsp-hover-buffer<ret>'                                                               -docstring 'show info in a buffer (LSP)'
+map global space r     ':lsp-rename-prompt<ret>'                                                              -docstring 'rename (LSP)'
+map global space d     ':lsp-diagnostics<ret>'                                                                -docstring 'diagnostic (LSP)'
+map global space w     ':lsp-diagnostic-object --include-warnings<ret>'                                       -docstring 'next error/warning (LSP)'
+# map global space f     ':format-buffer<ret>'                                                                  -docstring 'format current buffer (LSP)'
+map global space <a-R> ':lsp-disable-window<ret>:lsp-disable<ret>:lsp-hover<ret><esc>:lsp-enable-window<ret>' -docstring 'restart lsp client (LSP)'
+map global space O     ':reverse-selections<ret>'                                                             -docstring 'reverse selections'
+map global space o     ':reverse-chars<ret>'                                                                  -docstring 'reverse chars'
+map global space <c-s> ':set global autoinfo command|onkey<ret>'                                              -docstring 'show info box'
+map global space <c-h> ':set global autoinfo command<ret>'                                                    -docstring 'hide info box'
+map global space f     ':focus-toggle<ret>'                                                                   -docstring 'toggle focus'
+map global normal '<space>' ':enter-user-mode space<ret>'
+
+# tag menu
+declare-user-mode tags
+map global tags a ':surround-with-tag<ret>' -docstring 'add surrounding tag'
+map global tags s ':select-surrounding-tag<ret>' -docstring 'select surrounding tag'
+map global tags c ':change-surrounding-tag<ret>' -docstring 'change surrounding tag'
+map global normal <c-t> ':enter-user-mode tags<ret>' -docstring 'enter tags mode'
+
+# plugins
+source "%val{config}/plugs.kak"
+
+# some editor options
+set-option global scrolloff 7,7
+set-option global indentwidth 4
+set-option global tabstop 4
+set-option global autocomplete prompt
+set-option global autoinfo command
+
+# ctrl+w to delete word in insert mode
+map global insert <c-w> '<a-;>b<a-;><a-d>'
+
+# vim-like bindings to decrease / increase a number
+map global normal <c-x> '<a-i>n|read number; if [[ "$number" != "-" ]]; then ((number = $number - 1)); echo $number; else echo $number; fi<ret>'
+map global normal <c-a> '<a-i>n|read number; if [[ "$number" != "-" ]]; then ((number = $number + 1)); echo $number; else echo $number; fi<ret>'
+
+# softwrap long lines
+add-highlighter global/softwrap wrap -word -indent
+
+# hook global BufSetOption extra_word_chars=.+  %{
+#     set-option -remove buffer extra_word_chars '_' '-'
+# }

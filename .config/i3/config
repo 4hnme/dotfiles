@@ -1,0 +1,367 @@
+# i3blocks config -> /home/hotsadboi/.config/i3blocks/config
+
+
+set $mod Mod4
+#         ^
+#      Win key
+
+# bindsym $mod+z exec firefox "/home/hotsadboi/Documents/rapira.html"
+
+# AUTOSTART APPLICATIONS ----------------------------------------------------------------------------
+exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+exec --no-startup-id nitrogen --restore; sleep 1; picom -b
+exec --no-startup-id nm-applet
+exec --no-startup-id xfce4-power-manager
+exec --no-startup-id clipit
+exec --no-startup-id xautolock -time 15 -locker blurlock
+# ---------------------------------------------------------------------------------------------------
+
+# KEYBOARD CONFIGURATION ----------------------------------------------------------------------------
+exec --no-startup-id setxkbmap -model pc104 -layout us,ru -variant ,anime -option grp:caps_toggle -option compose:rctrl -synch
+#                                          ^             ^                     ^                      ^
+#                      standart 104-key keyboard   two layouts        switching layouts     enabling composition
+
+exec --no-startup-id xset r rate 220 30
+#                        ^   ^
+#                     delay  rate
+
+# updating layout indicator (check i3blocks/config for context)
+bindsym Caps_Lock exec pkill -RTMIN+27 i3blocks
+# ---------------------------------------------------------------------------------------------------
+
+# DEFAULT WINDOW CONFIGURATION ----------------------------------------------------------------------
+for_window [class="^.*"] border pixel 0, mark --add _
+smart_gaps on
+gaps inner 6
+gaps outer 0
+
+# floating
+#                                                                  means the title bar is visible
+#                                                                               v
+for_window [class="Syncthing"]                        floating enable, border normal 0, mark --add f
+for_window [class="Lutris"]                           floating enable, border normal 0, mark --add f
+for_window [title="^Tesseract OCR"]                   floating enable, border normal 0, mark --add f
+for_window [title=".*external editor"]                floating enable, border normal 0, mark --add f
+for_window [title="alsamixer"]                        floating enable, border normal 0, mark --add f
+for_window [class="pavucontrol"]                      floating enable, border normal 0, mark --add f
+for_window [class="calamares"]                        floating enable, border normal 0, mark --add f
+for_window [class="Clipgrab"]                         floating enable, border normal 0, mark --add f
+for_window [title="File Transfer*"]                   floating enable, border normal 0, mark --add f
+for_window [class="fpakman"]                          floating enable, border normal 0, mark --add f
+for_window [class="Galculator"]                       floating enable, border normal 0, mark --add f
+for_window [class="GParted"]                          floating enable, border normal 0, mark --add f
+for_window [title="i3_help"]                          floating enable, border normal 0, mark --add f
+for_window [class="Clipit"]                           floating enable, border normal 0, mark --add f
+for_window [class="Lightdm-settings"]                 floating enable, border normal 0, mark --add f
+for_window [class="Lxappearance"]                     floating enable, border normal 0, mark --add f
+for_window [class="Manjaro-hello"]                    floating enable, border normal 0, mark --add f
+for_window [class="Manjaro Settings Manager"]         floating enable, border normal 0, mark --add f
+for_window [class="Nitrogen"]                         floating enable, border normal 0, mark --add f
+for_window [class="[Aa]baddon"]                       floating enable, border normal 0, mark --add f
+for_window [class="[Dd]iscord"]                       floating enable, border normal 0, mark --add f
+for_window [class="^[Vv]esktop"]                      floating enable, border normal 0, mark --add f
+for_window [class="[Ss]team"]                         floating enable, border normal 0, mark --add f
+for_window [class="octopi"]                           floating enable, border normal 0, mark --add f
+for_window [class="Pamac-manager"]                    floating enable, border normal 0, mark --add f
+for_window [class="Pavucontrol"]                      floating enable, border normal 0, mark --add f
+for_window [class="qt5ct"]                            floating enable, border normal 0, mark --add f
+for_window [class="Qtconfig-qt4"]                     floating enable, border normal 0, mark --add f
+for_window [class="Simple-scan"]                      floating enable, border normal 0, mark --add f
+for_window [class="(?i)System-config-printer.py"]     floating enable, border normal 0, mark --add f
+for_window [class="Timeset-gui"]                      floating enable, border normal 0, mark --add f
+for_window [class="Xfburn"]                           floating enable, border normal 0, mark --add f
+for_window [class="sxiv"]                             floating enable, border normal 0, mark --add f
+for_window [title="Torrent Options"]                  floating enable, border normal 0, mark --add f
+for_window [class="[Dd]eluge"]                        floating enable, border normal 0, mard --add f
+for_window [window_role="GtkFileChooserDialog"]       floating enable, border normal 0, mark --add f
+#                                                                                    ^
+#                                                                              border width
+
+# special cases for specific needs
+for_window [title="screenkey"]                        floating enable, border pixel 0, mark --add f, sticky enable
+for_window [class="screenkey"]                        floating enable, border pixel 0, mark --add f, sticky enable
+for_window [title="^(?!Telegram).+" class="TelegramDesktop"] floating enable, border normal 0, mark --add f
+
+# workspaces
+for_window [class="firefox"]                          move to workspace $ws2
+for_window [class="[Vv]ieb"]                          move to workspace $ws2
+for_window [class="[Dd]iscord"]                       move to workspace $ws4
+for_window [class="[Vv]esktop"]                       move to workspace $ws4
+for_window [class="TelegramDesktop"]                  move to workspace $ws3
+for_window [class="[Ss]team.*"]                       move to workspace $ws8
+for_window [class="Lutris"]                           move to workspace $ws8
+for_window [class="[Dd]eluge"]                        move to workspace $ws5
+
+# changing the gap size
+bindsym $mod+g          gaps outer current plus  6;   gaps inner current plus  6
+bindsym $mod+Shift+g    gaps outer current minus 6;   gaps inner current minus 6
+bindsym $mod+x          gaps outer current set   0;   gaps inner current set   6
+# ---------------------------------------------------------------------------------------------------
+
+# MAKING SCREENSHOTS --------------------------------------------------------------------------------
+bindsym Print exec --no-startup-id maim --capturebackground --format=png | xclip -selection clipboard -t image/png
+bindsym Ctrl+Print exec --no-startup-id maim --capturebackground --format=png --window $(xdotool getactivewindow) | xclip -selection clipboard -t image/png
+bindsym Shift+Print exec --no-startup-id "maim --capturebackground --format=png --select | xclip -selection clipboard -t image/png"
+bindsym $mod+b exec boomer
+# ---------------------------------------------------------------------------------------------------
+
+
+# DEFAULT I3WM SHENANIGANS --------------------------------------------------------------------------
+# adjusting pulseaudio volume
+set $refresh_i3status killall -SIGUSR1 i3status
+bindsym XF86AudioRaiseVolume  exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10% && $refresh_i3status
+bindsym XF86AudioLowerVolume  exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -10% && $refresh_i3status
+bindsym XF86AudioMute         exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
+bindsym XF86AudioMicMute      exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle &&refresh_i3status
+bindsym $mod+a exec --no-startup-id pavucontrol
+
+# muting audio
+bindsym $mod+m       exec --no-startup-id "amixer -q sset Capture toggle && pkill -RTMIN+28 i3block"
+bindsym $mod+Shift+m exec --no-startup-id "amixer -q sset Master toggle && pkill -RTMIN+29 i3blocks"
+# doesn't work anymore
+# bindsym $mod+b exec --no-startup-id "pkill -RTMIN+30 i3blocks"
+bindsym $mod+Shift+a exec  --no-startup-id "~/.config/i3/scripts/toggle_activate_linux.sh"
+
+# lock screen
+# bindsym $mod+Escape exec --no-startup-id blurlock
+
+# start a terminal
+bindsym $mod+Return exec alacritty
+bindsym $mod+i exec exedit
+
+#                                                 nice
+#                                                  v
+# switch opacity of the terminal between 1.0 and 0.69, custom script
+bindsym $mod+o exec --no-startup-id "~/.config/i3/scripts/toggle_alacritty_opacity"
+
+# kill focused window
+bindsym $mod+Shift+q kill
+
+# shutdown, custom script
+bindsym $mod+Shift+x exec sysact
+
+# start dmenu (a program launcher)
+bindsym $mod+d exec dmenu_run
+
+# change focus
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+
+# move focused window
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+
+# split in horizontal orientation
+bindsym $mod+Ctrl+h split h
+
+# split in vertical orientation
+bindsym $mod+Ctrl+v split v
+
+# change container layout (stacked, tabbed, toggle split)
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+
+# enter fullscreen mode for the focused container
+bindsym $mod+f fullscreen toggle
+
+# toggle tiling / floating. using mark shenanigans to make title only visible for floating windows and mark them as 'f'
+bindsym $mod+Shift+space "mark --add _; [con_mark=f] floating disable, border pixel 0, mark --add --toggle _; [con_mark=_] floating enable, border normal 0; mark --add --toggle f;"
+show_marks no
+
+# drag floating windows with $mod + mouse
+floating_modifier $mod
+
+# change focus between tiling / floating windows
+bindsym $mod+space focus mode_toggle
+
+# focus the parent container
+bindsym $mod+p focus parent
+
+# focus the child container
+bindsym $mod+c focus child
+
+# reload the configuration file
+bindsym $mod+Shift+c reload
+
+# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
+bindsym $mod+Shift+r restart
+
+# exit i3 (logs you out of your X session)
+bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really wa to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
+# -------------------------------------------------------------------------------------------------
+
+# workspaces --------------------------------------------------------------------------------------
+# worskpace names
+set $ws1  "1: "
+#             ^
+# no, this space is neccessary
+set $ws2  "2:󰖟 "
+set $ws3  "3: "
+set $ws4  "4:IV"
+set $ws5  "5:V"
+set $ws6  "6:VI"
+set $ws7  "7:VII"
+set $ws8  "8: "
+set $ws9  "9:IX"
+set $ws10 "10:X"
+
+# switch to workspace
+bindsym $mod+1 workspace $ws1
+bindsym $mod+2 workspace $ws2
+bindsym $mod+3 workspace $ws3
+bindsym $mod+4 workspace $ws4
+bindsym $mod+5 workspace $ws5
+bindsym $mod+6 workspace $ws6
+bindsym $mod+7 workspace $ws7
+bindsym $mod+8 workspace $ws8
+bindsym $mod+9 workspace $ws9
+bindsym $mod+0 workspace $ws10
+
+# move focused container to workspace
+bindsym $mod+Shift+1 move container to workspace $ws1
+bindsym $mod+Shift+2 move container to workspace $ws2
+bindsym $mod+Shift+3 move container to workspace $ws3
+bindsym $mod+Shift+4 move container to workspace $ws4
+bindsym $mod+Shift+5 move container to workspace $ws5
+bindsym $mod+Shift+6 move container to workspace $ws6
+bindsym $mod+Shift+7 move container to workspace $ws7
+bindsym $mod+Shift+8 move container to workspace $ws8
+bindsym $mod+Shift+9 move container to workspace $ws9
+bindsym $mod+Shift+0 move container to workspace $ws10
+# -------------------------------------------------------------------------------------------------
+
+# RESIZE WINDOW (you can also use the mouse for that) ---------------------------------------------
+bindsym $mod+r mode "resize"
+mode "resize" {
+        bindsym h resize shrink width  10 px or 10 ppt
+        bindsym k resize shrink height 10 px or 10 ppt
+        bindsym j resize grow   height 10 px or 10 ppt
+        bindsym l resize grow   width  10 px or 10 ppt
+
+        # back to normal: Enter or Escape or $mod+r
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+        bindsym $mod+r mode "default"
+}
+# -------------------------------------------------------------------------------------------------
+
+# VISUAL CONFIGURATION ----------------------------------------------------------------------------
+# system font
+font pango: DejaVuSansMono Nerd Font Bold 8
+
+# catppuccin mocha theme
+
+# set $rosewater      #f5e0dc
+# set $flamingo       #f2cdcd
+# set $pink           #f5c2e7
+# set $mauve          #cba6f7
+# set $red            #f38ba8
+# set $maroon         #eba0ac
+# set $peach          #fab387
+# set $green          #a6e3a1
+# set $teal           #94e2d5
+# set $sky            #89dceb
+# set $sapphire       #74c7ec
+# set $blue           #89b4fa
+# set $lavender       #b4befe
+# set $text           #cdd6f4
+# set $subtext1       #bac2de
+# set $subtext0       #a6adc8
+# set $overlay2       #9399b2
+# set $overlay1       #7f849c
+# set $overlay0       #6c7086
+# set $surface2       #585b70
+# set $surface1       #45475a
+# set $surface0       #313244
+# set $base           #1e1e2e
+# set $mantle         #181825
+# set $crust          #11111b
+
+# target                   title     bg     text   indicator  border
+# client.focused           $pink     $pink  $base  $rosewater $pink
+# client.focused_inactive  $base     $base  $pink  $rosewater $base
+# client.unfocused         $base     $base  $text  $rosewater $mauve
+# client.urgent            $peach    $base  $peach $overlay0  $peach
+# client.placeholder       $overlay0 $base  $text  $overlay0  $overlay0
+# client.background        $base
+
+# meliora theme
+
+set $m_bg0          #1c1917
+set $m_bg1          #24201e
+set $m_bg2          #2a2522
+set $m_bg3          #302a27
+set $m_bg_trans     #1c1917b0
+set $m_white0       #d6d0cd
+set $m_white1       #b8aea8
+set $m_white2       #9a8d84
+set $m_white3       #685c55
+set $m_white4       #514843
+set $m_yellow       #c4b392
+set $m_khaki        #bcaa9a
+set $m_purple       #b696b1
+set $m_green        #b6b696
+set $m_dark_green   #727246
+set $m_pink         #d78f88
+set $m_dark_orange  #d7b788
+set $m_light_blue   #98acc8
+set $m_light_purple #b098c8
+# more dull, less agressive colors
+set $m_red          #d4a1a1
+set $m_orange       #cdb899
+set $m_blue         #a09bac
+# set $m_red          #d49191
+# set $m_orange       #cdab89
+# set $m_blue         #9e96b6
+
+# target                 title       bg         text       indicator   border
+client.focused           $m_yellow   $m_yellow  $m_bg0     $m_pink     $m_yellow
+client.focused_inactive  $m_bg1      $m_bg1     $m_white2   $m_pink     $m_bg1
+client.unfocused         $m_bg0      $m_bg0     $m_white0  $m_pink     $m_khaki
+client.urgent            $m_red      $m_bg0     $m_red     $m_bg_trans $m_red
+client.placeholder       $m_bg_trans $m_bg0     $m_white0  $m_bg_trans $m_bg_trans
+client.background        $m_bg0
+
+
+# -------------------------------------------------------------------------------------------------
+
+# BAR CONFIGURATION -------------------------------------------------------------------------------
+bar {
+    height 18
+    position top
+    status_command i3blocks
+    i3bar_command i3bar -t
+    strip_workspace_numbers yes
+    separator_symbol "┃"
+    font pango:dejavusansmono Nerd Font Bold 9.5
+
+    # catppuccin mocha theme
+
+    # colors {
+    #   background $base
+    #   statusline $text
+    #   separator $rosewater
+    #   #                    border       bg          text
+    #   focused_workspace    $pink        $pink       $base
+    #   inactive_workspace   $base        $base       $pink
+    #   urgent_workspace     $red         $red        $base
+    # }
+
+    # meliora theme
+
+    colors {
+      background $m_bg_trans
+      statusline $m_white0
+      separator $m_bg_trans
+      #                    border       bg          text
+      focused_workspace    $m_purple    $m_purple   $m_bg_trans
+      inactive_workspace   $m_bg_trans  $m_bg_trans $m_purple
+      urgent_workspace     $m_red       $m_red      $m_bg_trans
+    }
+}
+# -------------------------------------------------------------------------------------------------

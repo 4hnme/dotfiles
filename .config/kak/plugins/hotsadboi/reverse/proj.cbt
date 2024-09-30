@@ -1,0 +1,2 @@
+# module ; relies on modules ; uses external libs
+reverse ; _ ; base, stdio
