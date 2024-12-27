@@ -9,23 +9,25 @@ map global insert <c-h> '<a-;>h'
 map global insert <c-l> '<a-;>l'
 # map global insert <c-j> '<a-;>j' <- doesn't work because <c-j> is <ret>
 # map global insert <c-k> '<a-;>k'
-map global normal Y     '<a-|>xclip -i -selection clipboard<ret>:echo -markup "{Information}yanked %val{selection_count} selections to system clipboard"<ret>'
+map global normal Y     '<a-|>wl-copy<ret>:echo -markup "{Information}yanked %val{selection_count} selections to system clipboard"<ret>'
 
 # user menu inspired by my helix config
 declare-user-mode space
-map global space a     ':lsp-code-actions<ret>'                                                               -docstring 'code action (LSP)'
+map global space A     ':lsp-code-actions<ret>'                                                               -docstring 'code action (LSP)'
 map global space k     ':lsp-hover<ret>'                                                                      -docstring 'show info (LSP)'
 map global space K     ':lsp-hover-buffer<ret>'                                                               -docstring 'show info in a buffer (LSP)'
 map global space r     ':lsp-rename-prompt<ret>'                                                              -docstring 'rename (LSP)'
 map global space d     ':lsp-diagnostics<ret>'                                                                -docstring 'diagnostic (LSP)'
 map global space w     ':lsp-diagnostic-object --include-warnings<ret>'                                       -docstring 'next error/warning (LSP)'
 # map global space f     ':format-buffer<ret>'                                                                  -docstring 'format current buffer (LSP)'
-map global space <a-R> ':lsp-disable-window<ret>:lsp-disable<ret>:lsp-hover<ret><esc>:lsp-enable-window<ret>' -docstring 'restart lsp client (LSP)'
+map global space <a-R> ':lsp-restart<ret>' -docstring 'restart lsp client (LSP)'
 map global space O     ':reverse-selections<ret>'                                                             -docstring 'reverse selections'
 map global space o     ':reverse-chars<ret>'                                                                  -docstring 'reverse chars'
 map global space <c-s> ':set global autoinfo command|onkey<ret>'                                              -docstring 'show info box'
 map global space <c-h> ':set global autoinfo command<ret>'                                                    -docstring 'hide info box'
-map global space f     ':focus-toggle<ret>'                                                                   -docstring 'toggle focus'
+map global space d     '<a-i>w:ctags-search<ret>'                                                             -docstring 'ctags go to definition'
+map global space c     ':comment-line<ret>'                                                                   -docstring 'comment line'
+map global space C     ':comment-block<ret>'                                                                  -docstring 'comment block'
 map global normal '<space>' ':enter-user-mode space<ret>'
 
 # tag menu
@@ -53,8 +55,17 @@ map global normal <c-x> '<a-i>n|read number; if [[ "$number" != "-" ]]; then ((n
 map global normal <c-a> '<a-i>n|read number; if [[ "$number" != "-" ]]; then ((number = $number + 1)); echo $number; else echo $number; fi<ret>'
 
 # softwrap long lines
-add-highlighter global/softwrap wrap -word -indent
+
+hook global WinSetOption filetype=* %{
+    add-highlighter buffer/softwrap wrap -word -indent
+}
 
 # hook global BufSetOption extra_word_chars=.+  %{
 #     set-option -remove buffer extra_word_chars '_' '-'
 # }
+
+# more sensible *make* bindings
+hook global BufSetOption filetype=make %{
+    map buffer space w ':jump-select-next<ret>:set buffer jump_current_line %val{cursor_line}<ret>'
+    map buffer normal <ret> ':jump<ret>'
+}

@@ -15,7 +15,8 @@ declare-option str c_blue      'rgb:9e96b6' #m_blue
 declare-option str c_aqua      'rgb:98acc8' #m_light_blue
 declare-option str c_khaki     'rgb:bcaa9a' #m_khaki
 declare-option str c_green     'rgb:b6b696' #m_green
-declare-option str c_comment   'rgb:727246' #m_dark_green
+# declare-option str c_comment   'rgb:727246' #m_dark_green
+declare-option str c_comment   'rgb:797269' #m_dark_green
 declare-option str c_orange    'rgb:cdb899' #m_orange
 declare-option str c_pink      'rgb:eabab5' #m_pink
 declare-option str c_red       'rgb:d4a1a1' #m_red
@@ -29,7 +30,8 @@ declare-option str trailing_spaces "default,%opt{ssel}+F"
 
 # Code faces
 set-face global value      "%opt{c_white_0}"
-set-face global type       "%opt{c_yellow}"
+# set-face global type       "%opt{c_yellow}"
+set-face global type       "%opt{c_khaki}"
 set-face global variable   "%opt{c_yellow}"
 set-face global module     "%opt{c_blue}"
 set-face global function   "%opt{c_blue}"
@@ -97,14 +99,17 @@ set-face global StatusLineInfo     "%opt{c_khaki},%opt{c_gray_1}"
 set-face global StatusLineValue    "%opt{c_blue},%opt{c_gray_1}"
 set-face global StatusCursor       "%opt{c_dark},%opt{c_white_1}"
 set-face global Prompt             "%opt{c_orange},%opt{c_black}"
-set-face global MatchingChar       "%opt{c_blue},%opt{c_black}"
+# set-face global MatchingChar       "%opt{c_blue},%opt{c_black}"
+set-face global MatchingChar       "%opt{c_white_0},default+fbu"
 set-face global Whitespace         "%opt{c_white_sec},%opt{c_black}"
 set-face global WrapMarker Whitespace
 
+add-highlighter -override global/matching show-matching
 # Different mode hooks
 # when entering normal mode
 hook -group meliora-theme global ModeChange pop:insert:normal %{
     add-highlighter -override global/trails regex \h+$ 0:trailing
+    add-highlighter -override global/matching show-matching
     # set-face global SecondarySelection "%opt{normal_ssel}+b"
     # set-face global PrimarySelection "%opt{normal_psel}+b"
     set-face global PrimaryCursor "%opt{normal_cursor}"
@@ -114,6 +119,7 @@ hook -group meliora-theme global ModeChange pop:insert:normal %{
 # when entering insert mode
 hook -group meliora-theme global ModeChange push:normal:insert %{
     try %{ remove-highlighter global/trails }
+    try %{ remove-highlighter global/matching }
     # set-face global SecondarySelection "%opt{insert_ssel}+b"
     # set-face global PrimarySelection "%opt{insert_psel}+b"
     set-face global PrimaryCursor "%opt{insert_cursor}"

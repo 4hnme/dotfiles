@@ -2,8 +2,38 @@
 source "%val{config}/plugins/plug.kak/rc/plug.kak"
 plug "andreyorst/plug.kak" noload
 
+plug "occivink/kakoune-buffer-switcher" config %{
+    map global space a ':buffer-switcher<ret>' -docstring 'buffer switcher'
+    # putting it here because of disabled tabs plugin
+    # set-option global modelinefmt '{{context_info}} │ {StatusLineInfo}%val{bufname}{StatusLine} │ %val{cursor_line}:%val{cursor_char_column} │ %val{client}@[%val{session}] │ {{mode_info}}'
+    set-option global modelinefmt '{{context_info}} | {StatusLineInfo}%val{bufname}{StatusLine} | %val{cursor_line}:%val{cursor_char_column} | %val{client}@[%val{session}] | {{mode_info}}'
+    map global normal <a-q> ':delete-buffer<ret>'
+    map global normal <a-Q> ':delete-buffer!<ret>'
+    set-face global BufferSwitcherCurrent "%opt{c_green},default+b"
+}
+
+plug "insipx/kak-crosshairs" config %{
+    set-face global crosshairs_line "default,%opt{c_dark}"
+    cursorline
+}
+
+# plug "andreyorst/tagbar.kak"
+plug "andreyorst/tagbar.kak" defer "tagbar" %{
+    set-option global tagbar_sort false
+    set-option global tagbar_size 40
+    set-option global tagbar_display_anon false
+} config %{
+    # if you have wrap highlighter enamled in you configuration
+    # files it's better to turn it off for tagbar, using this hook:
+    hook global WinSetOption filetype=tagbar %{
+        remove-highlighter buffer/softwrap
+        # you can also disable rendering whitespaces here, line numbers, and
+        # matching characters
+    }
+}
+
 # case subversion
-plug "your-tools/kak-subvert"
+# plug "your-tools/kak-subvert"
 
 # spaces instead of tabs
 plug "andreyorst/smarttab.kak" defer smarttab %{
@@ -34,13 +64,13 @@ plug "occivink/kakoune-phantom-selection" config %{
 plug "antono2/vlang.kak"
 
 # tabs for buffers
-plug "enricozb/tabs.kak" config %{
-    set-option global tabs_modelinefmt '{{mode_info}} | %val{cursor_line}:%val{cursor_char_column} '
-    map global normal <a-q> ':enter-user-mode tabs<ret>'
-    map global normal <a-s-q> ':enter-user-mode -lock tabs<ret>'
-    map global tabs D ':delete-buffer!<ret>' -docstring 'delete (focused) even in unsaved'
-    set-option global tabs_options --minified --separator '""' --focused-face StatusLineMode --inactive-face StatusLine --modified-face StatusLineValue
-}
+# plug "enricozb/tabs.kak" config %{
+#     set-option global tabs_modelinefmt '{{mode_info}} | %val{cursor_line}:%val{cursor_char_column} '
+#     map global normal <a-q> ':enter-user-mode tabs<ret>'
+#     map global normal <a-s-q> ':enter-user-mode -lock tabs<ret>'
+#     map global tabs D ':delete-buffer!<ret>' -docstring 'delete (focused) even in unsaved'
+#     set-option global tabs_options --minified --separator '""' --focused-face StatusLineMode --inactive-face StatusLine --modified-face StatusLineValue
+# }
 
 # surround (almost like helix but worse) (for some reason works)
 plug "h-youhei/kakoune-surround" config %{
@@ -55,17 +85,16 @@ plug "h-youhei/kakoune-surround" config %{
 }
 
 # focus on multi-cursor selections
-plug "caksoylar/kakoune-focus" config %{
-    # set-option global focus_separator '{LineNumbers}~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{Default}'
-    # set-option global focus_context_lines 1
-}
+# plug "caksoylar/kakoune-focus" config %{
+#     map global space f ':focus-toggle<ret>' -docstring 'toggle focus'
+# }
 
 # select up and down
-plug "occivink/kakoune-vertical-selection" config %{
-    map global space <a-v> ':vertical-selection-up<ret>'      -docstring 'vertical selection up'
-    map global space v ':vertical-selection-down<ret>'        -docstring 'vertical selection down'
-    map global space V ':vertical-selection-up-and-down<ret>' -docstring 'vertical selection up and down'
-}
+# plug "occivink/kakoune-vertical-selection" config %{
+#     map global space <a-v> ':vertical-selection-up<ret>'      -docstring 'vertical selection up'
+#     map global space v ':vertical-selection-down<ret>'        -docstring 'vertical selection down'
+#     map global space V ':vertical-selection-up-and-down<ret>' -docstring 'vertical selection up and down'
+# }
 
 # select view (only visible text, not the entire buffer)
 plug "Delapouite/kakoune-select-view" config %{
@@ -84,7 +113,28 @@ plug "kak-lsp/kak-lsp" do %{
     set-face global DiagnosticError "default,default"
     set-face global DiagnosticWarning "default,default"
     # lsp-diagnostic-lines-enable global
-    # lsp-stop-on-exit-enable
+    lsp-stop-on-exit-enable
+
+    hook -group lsp-filetype-vlang global BufSetOption filetype=v %{
+        set-option buffer lsp_servers %{
+            [v-analyzer]
+            root_globs = ["v.mod", "mod.v", "main.v"]
+        }
+    }
+
+    hook -group lsp-filetype-vlang global BufSetOption filetype=odin %{
+        set-option buffer lsp_servers %{
+            [ols]
+            command = "/home/hotsadboi/thirdparty/ols/ols"
+            root_globs = ["main.odin", "src"]
+            [ols.settings]
+        	enable_semantic_tokens = false
+        	enable_document_symbols = true
+        	enable_hover = true
+        	enable_snippets = true
+        	profile = "default"
+        }
+    }
 }
 # hooks for kak-lsp
 hook global WinSetOption filetype=(ocaml) %{
@@ -93,8 +143,11 @@ hook global WinSetOption filetype=(ocaml) %{
     set-option window indentwidth 2
     set-option window softtabstop 2
 }
-hook global WinSetOption filetype=(c|go|rust|haskell|ocaml|v) %{
-    lsp-enable-window
+hook global WinSetOption filetype=(c|go|rust|haskell|ocaml) %{
+    # lsp-enable-window
+    expandtab
+}
+hook global WinSetOption filetype=(v|odin) %{
     expandtab
 }
 
@@ -133,3 +186,9 @@ plug "hotsadboi" config %{
     map global normal <c-j> ':drag-down<ret>' # <- works because <c-j> is <ret>
     map global normal <ret> ':drag-down<ret>' # <- works because <c-j> is <ret>
 }
+
+plug "ex.kak" config %{
+    map global space e ':ls<ret>' -docstring 'open ex buffer'
+}
+
+plug "csharp.kak"

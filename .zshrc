@@ -105,8 +105,12 @@ source $ZSH/oh-my-zsh.sh
 #   export EDITOR='mvim'
 # fi
 export EDITOR='kak'
-export BROWSER='vieb'
-export TERMINAL='st'
+export BROWSER='librewolf'
+export TERMINAL='foot'
+export AI_PROVIDER='duckduckgo'
+export PATH=$PATH:/home/hotsadboi/.cargo/bin
+export PATH=$PATH:/home/hotsadboi/go/bin
+export PATH=$PATH:/home/hotsadboi/thirdparty/odin
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
@@ -123,29 +127,13 @@ alias tsn="tmux-sessionizer"
 alias tsl="tmux-select"
 alias fucking="sudo"
 alias please="sudo !!"
-alias uwu="uwufetch -a boykisser"
+alias uwu="uwufetch"
 # autojump but smarter
 eval "$(zoxide init zsh)"
 alias cd="z"
 # custom nice-looking prompt (sucks sometimes)
 eval "$(starship init zsh)"
+eval "$(dircolors)"
 
 #
 bindkey '^W' backward-delete-word
-
-# free pascal
-export PATH=$PATH:/home/hotsadboi/fpc-3.2.0/bin
-
-# opam configuration
-[[ ! -r /home/hotsadboi/.opam/opam-init/init.zsh ]] || source /home/hotsadboi/.opam/opam-init/init.zsh  > /dev/null 2> /dev/null
-export OCAMLFORMAT=profile=janestreet,margin=80
-
-# ghcup-env
-[ -f "/home/hotsadboi/.ghcup/env" ] && source "/home/hotsadboi/.ghcup/env"
-
-# bun completions
-[ -s "/home/hotsadboi/.bun/_bun" ] && source "/home/hotsadboi/.bun/_bun"
-
-# bun
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
