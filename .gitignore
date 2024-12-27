@@ -25,6 +25,8 @@
 .config/kak/plugins/auto-pairs.kak
 # .config/kak/plugins/hotsadboi
 .config/kak/plugins/kak-lsp
+.config/kak/plugins/kakoune-buffer-switcher
+.config/kak/plugins/kak-crosshairs
 .config/kak/plugins/kakoune-focus
 .config/kak/plugins/kakoune-palette
 .config/kak/plugins/kakoune-phantom-selection
