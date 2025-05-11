@@ -1,12 +1,12 @@
 colorscheme meliora
 
-# make (half)page jumps move less disorienting by keeping cursor in the middle
-map global insert <c-esc> ':wq<ret>'
-map global normal <c-esc> ':wq<ret>'
+# evaluate-commands %sh{if [ -t 0 ]; then echo "declare-option str res 'colorscheme meliora'"; else echo "declare-option str res 'running in TTY'"; fi}
 
 # simple movement in insert mode
 map global insert <c-h> '<a-;>h'
 map global insert <c-l> '<a-;>l'
+map global insert <c-a> '<a-;>gi'
+map global insert <c-e> '<esc>glli'
 # map global insert <c-j> '<a-;>j' <- doesn't work because <c-j> is <ret>
 # map global insert <c-k> '<a-;>k'
 map global normal Y     '<a-|>wl-copy<ret>:echo -markup "{Information}yanked %val{selection_count} selections to system clipboard"<ret>'
@@ -28,6 +28,8 @@ map global space <c-h> ':set global autoinfo command<ret>'                      
 map global space d     '<a-i>w:ctags-search<ret>'                                                             -docstring 'ctags go to definition'
 map global space c     ':comment-line<ret>'                                                                   -docstring 'comment line'
 map global space C     ':comment-block<ret>'                                                                  -docstring 'comment block'
+map global space |     '|bash<ret>'                                                                           -docstring 'pipe selected text into shell'
+map global space <ret> "|bash -c 'read e; echo $((e))'<ret>"                                                  -docstring 'evaluate arithmetic expression'
 map global normal '<space>' ':enter-user-mode space<ret>'
 
 # tag menu
@@ -51,13 +53,12 @@ set-option global autoinfo command
 map global insert <c-w> '<a-;>b<a-;><a-d>'
 
 # vim-like bindings to decrease / increase a number
-map global normal <c-x> '<a-i>n|read number; if [[ "$number" != "-" ]]; then ((number = $number - 1)); echo $number; else echo $number; fi<ret>'
-map global normal <c-a> '<a-i>n|read number; if [[ "$number" != "-" ]]; then ((number = $number + 1)); echo $number; else echo $number; fi<ret>'
+map global normal <c-x> '<a-i>n|read num; if [ "$num" != "-" ]; then num=$(($num-1)); fi; echo $num<ret>'
+map global normal <c-a> '<a-i>n|read num; if [ "$num" != "-" ]; then num=$(($num+1)); fi; echo $num<ret>'
 
 # softwrap long lines
-
 hook global WinSetOption filetype=* %{
-    add-highlighter buffer/softwrap wrap -word -indent
+    add-highlighter buffer wrap -word -indent
 }
 
 # hook global BufSetOption extra_word_chars=.+  %{

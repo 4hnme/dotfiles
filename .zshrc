@@ -12,41 +12,11 @@ autoload -U compinit && compinit -u
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
-# Set name of the theme to load --- if set to "random", it will
-# load a random theme each time oh-my-zsh is loaded, in which case,
-# to know which specific one was loaded, run: echo $RANDOM_THEME
-# See https://github.com/ohmyzsh/ohmyzsh/wiki/themes
 ZSH_THEME="simple"
-
-# Set list of themes to pick from when loading at random
-# Setting this variable when ZSH_THEME=random will cause zsh to load
-# a theme from this variable instead of looking in $ZSH/themes/
-# If set to an empty array, this variable will have no effect.
-# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
-
-# Uncomment the following line to use case-sensitive completion.
-# CASE_SENSITIVE="true"
-
-# Uncomment the following line to use hyphen-insensitive completion.
-# Case-sensitive completion must be off. _ and - will be interchangeable.
-# HYPHEN_INSENSITIVE="true"
-
-# Uncomment one of the following lines to change the auto-update behavior
-# zstyle ':omz:update' mode disabled  # disable automatic updates
-# zstyle ':omz:update' mode auto      # update automatically without asking
-# zstyle ':omz:update' mode reminder  # just remind me to update when it's time
-
-# Uncomment the following line to change how often to auto-update (in days).
-# zstyle ':omz:update' frequency 13
-
-# Uncomment the following line if pasting URLs and other text is messed up.
-# DISABLE_MAGIC_FUNCTIONS="true"
-
-# Uncomment the following line to disable colors in ls.
-# DISABLE_LS_COLORS="true"
 
 # Uncomment the following line to disable auto-setting terminal title.
 DISABLE_AUTO_TITLE="true"
+export TERM=st-256color
 
 case $TERM in xterm*)
     precmd () {print -Pn "\e]0;%~\a"}
@@ -77,6 +47,17 @@ esac
 # setopt inc_append_history
 unsetopt share_history
 
+
+function yy() {
+    local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+    yazi "$@" --cwd-file="$tmp"
+    if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+        cd -- "$cwd"
+    fi
+    rm -f -- "$tmp"
+}
+
+
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
 
@@ -87,28 +68,20 @@ unsetopt share_history
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(git vi-mode gh)
 export VI_MODE_SET_CURSOR=true
-# export ZVM_VI_INSERT_ESCAPE_BINDKEY=jk
 
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
-# export MANPATH="/usr/local/man:$MANPATH"
-
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
 
-# Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='mvim'
-# fi
 export EDITOR='kak'
-export BROWSER='librewolf'
-export TERMINAL='foot'
+export BROWSER='zen'
+export TERMINAL='st'
 export AI_PROVIDER='duckduckgo'
 export PATH=$PATH:/home/hotsadboi/.cargo/bin
+export PATH=$PATH:/home/hotsadboi/.local/bin
 export PATH=$PATH:/home/hotsadboi/go/bin
 export PATH=$PATH:/home/hotsadboi/thirdparty/odin
 
@@ -121,19 +94,17 @@ export PATH=$PATH:/home/hotsadboi/thirdparty/odin
 # For a full list of active aliases, run `alias`.
 #
 # Example aliases
-alias notes="$EDITOR $HOME/Documents/notes"
 alias kak="pkill lsp || true && kak"
-alias tsn="tmux-sessionizer"
-alias tsl="tmux-select"
-alias fucking="sudo"
-alias please="sudo !!"
 alias uwu="uwufetch"
+
 # autojump but smarter
 eval "$(zoxide init zsh)"
 alias cd="z"
+
 # custom nice-looking prompt (sucks sometimes)
 eval "$(starship init zsh)"
 eval "$(dircolors)"
+eval "$(opam env)"
 
-#
+# delete with c-w without saving the deleted word into system clipboard
 bindkey '^W' backward-delete-word

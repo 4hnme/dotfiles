@@ -6,12 +6,13 @@ plug "occivink/kakoune-buffer-switcher" config %{
     map global space a ':buffer-switcher<ret>' -docstring 'buffer switcher'
     # putting it here because of disabled tabs plugin
     # set-option global modelinefmt '{{context_info}} │ {StatusLineInfo}%val{bufname}{StatusLine} │ %val{cursor_line}:%val{cursor_char_column} │ %val{client}@[%val{session}] │ {{mode_info}}'
-    set-option global modelinefmt '{{context_info}} | {StatusLineInfo}%val{bufname}{StatusLine} | %val{cursor_line}:%val{cursor_char_column} | %val{client}@[%val{session}] | {{mode_info}}'
-    map global normal <a-q> ':delete-buffer<ret>'
-    map global normal <a-Q> ':delete-buffer!<ret>'
+    set-option global modelinefmt '{{context_info}} | {StatusLineInfo}%val{bufname}{StatusLine} | %val{cursor_line}:%val{cursor_char_column} | %val{client}@[%val{session}] | {{mode_info}} '
+    map global space q ':delete-buffer<ret>'
+    map global space Q ':delete-buffer!<ret>'
     set-face global BufferSwitcherCurrent "%opt{c_green},default+b"
 }
 
+# highlight the line with the main selection
 plug "insipx/kak-crosshairs" config %{
     set-face global crosshairs_line "default,%opt{c_dark}"
     cursorline
@@ -32,9 +33,6 @@ plug "andreyorst/tagbar.kak" defer "tagbar" %{
     }
 }
 
-# case subversion
-# plug "your-tools/kak-subvert"
-
 # spaces instead of tabs
 plug "andreyorst/smarttab.kak" defer smarttab %{
     set-option global softtabstop 4
@@ -45,6 +43,12 @@ plug "andreyorst/smarttab.kak" defer smarttab %{
 
 # preview kakoune palette
 plug "Delapouite/kakoune-palette"
+
+plug "occivink/kakoune-expand" config %{
+    declare-user-mode expand
+    map global space <space> ':expand; enter-user-mode -lock expand<ret>' -docstring 'enter expand mode'
+    map global expand <space> ':expand<ret>' -docstring 'expand more'
+}
 
 # phantom selection
 plug "occivink/kakoune-phantom-selection" config %{
@@ -63,14 +67,19 @@ plug "occivink/kakoune-phantom-selection" config %{
 # vlang support
 plug "antono2/vlang.kak"
 
-# tabs for buffers
-# plug "enricozb/tabs.kak" config %{
-#     set-option global tabs_modelinefmt '{{mode_info}} | %val{cursor_line}:%val{cursor_char_column} '
-#     map global normal <a-q> ':enter-user-mode tabs<ret>'
-#     map global normal <a-s-q> ':enter-user-mode -lock tabs<ret>'
-#     map global tabs D ':delete-buffer!<ret>' -docstring 'delete (focused) even in unsaved'
-#     set-option global tabs_options --minified --separator '""' --focused-face StatusLineMode --inactive-face StatusLine --modified-face StatusLineValue
-# }
+plug "gustavo-hms/luar"
+plug "gustavo-hms/objetiva" %{
+    require-module objetiva
+    # map global object x '<a-;>objetiva-line<ret>' -docstring line
+    # map global object m '<a-;>objetiva-matching<ret>' -docstring matching
+    map global object <minus> '<a-;>objetiva-case<ret>' -docstring case
+    map global normal <c-e> ': objetiva-case-move<ret>'
+    map global normal <c-s-e> ': objetiva-case-expand<ret><esc>'
+    map global normal <c-w> ': objetiva-case-move<ret>'
+    map global normal <c-s-w> ': objetiva-case-expand<ret><esc>'
+    map global normal <c-b> ': objetiva-case-move-previous<ret>'
+    map global normal <c-s-b> ': objetiva-case-expand-previous<ret><esc>'
+}
 
 # surround (almost like helix but worse) (for some reason works)
 plug "h-youhei/kakoune-surround" config %{
@@ -79,22 +88,12 @@ plug "h-youhei/kakoune-surround" config %{
     map global surround r ':change-surround<ret>' -docstring 'replace'
     map global surround d ':delete-surround<ret>' -docstring 'delete'
     map global surround t ':select-surrounding-tag<ret>' -docstring 'select tag'
-    map global normal '<a-s>' ':enter-user-mode surround<ret>' -docstring 'surround'
+    map global normal \' ':enter-user-mode surround<ret>' -docstring 'surround'
     # putting this there so that <a-s> is not overrided (i'm sorry :c)
-    map global normal '<c-v>' '<a-s>'
+    # map global normal '<c-v>' '<a-s>'
+    define-command -override -hidden -params 1 _select-surrounding-pair %{ execute-keys -with-maps "<a-a>%arg{1}<a-S>" }
+    define-command -hidden -params 2 -override _change-surround %{ execute-keys "Z,r%arg{2}z),r%arg{1}" }
 }
-
-# focus on multi-cursor selections
-# plug "caksoylar/kakoune-focus" config %{
-#     map global space f ':focus-toggle<ret>' -docstring 'toggle focus'
-# }
-
-# select up and down
-# plug "occivink/kakoune-vertical-selection" config %{
-#     map global space <a-v> ':vertical-selection-up<ret>'      -docstring 'vertical selection up'
-#     map global space v ':vertical-selection-down<ret>'        -docstring 'vertical selection down'
-#     map global space V ':vertical-selection-up-and-down<ret>' -docstring 'vertical selection up and down'
-# }
 
 # select view (only visible text, not the entire buffer)
 plug "Delapouite/kakoune-select-view" config %{
@@ -118,6 +117,7 @@ plug "kak-lsp/kak-lsp" do %{
     hook -group lsp-filetype-vlang global BufSetOption filetype=v %{
         set-option buffer lsp_servers %{
             [v-analyzer]
+            command = "/home/hotsadboi/thirdparty/v-analyzer/bin/v-analyzer"
             root_globs = ["v.mod", "mod.v", "main.v"]
         }
     }
@@ -128,11 +128,11 @@ plug "kak-lsp/kak-lsp" do %{
             command = "/home/hotsadboi/thirdparty/ols/ols"
             root_globs = ["main.odin", "src"]
             [ols.settings]
-        	enable_semantic_tokens = false
-        	enable_document_symbols = true
-        	enable_hover = true
-        	enable_snippets = true
-        	profile = "default"
+            enable_semantic_tokens = false
+            enable_document_symbols = true
+            enable_hover = true
+            enable_snippets = true
+            profile = "default"
         }
     }
 }
@@ -161,14 +161,8 @@ plug 'ABuffSeagull/kakoune-vue' noload
 # my utils
 # plug "hotsadboi" load-path "%val{config}/plugins/hotsadboi" config %{
 plug "hotsadboi" config %{
-    # map global normal '<c-u>' "<c-u>gc"
-    # map global normal '<c-d>' "<c-d>gc"
     map global normal '<c-u>' ":custom-third-a-page-up<ret>"
     map global normal '<c-d>' ":custom-third-a-page-down<ret>"
-
-    # there is custom-page-up/down commands but <c-b> is occupied with multicursor selection backwards
-    # map global normal '<c-b>' ":custom-page-up<ret>"
-    # map global normal '<c-f>' ":custom-page-down<ret>"
 
     # easier way to move between brackets
     map global normal '<F1>' ':prev-matching-pair<ret>'
@@ -176,15 +170,12 @@ plug "hotsadboi" config %{
     map global normal '<s-F1>' ':extend-with-prev-matching-pair<ret>'
     map global normal '<s-F2>' ':extend-with-next-matching-pair<ret>'
 
-    # select words with multiple cursors
-    map global normal <c-e> ':add-next-word<ret>'
-    map global normal <c-w> ':add-next-word<ret>'
-    map global normal <c-b> ':add-prev-word<ret>'
-
     # drag selections up and down
     map global normal <c-k> ':drag-up<ret>'
     map global normal <c-j> ':drag-down<ret>' # <- works because <c-j> is <ret>
     map global normal <ret> ':drag-down<ret>' # <- works because <c-j> is <ret>
+
+    random-name
 }
 
 plug "ex.kak" config %{

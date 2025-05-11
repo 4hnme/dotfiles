@@ -1,0 +1,163 @@
+@import 'theme.css';
+
+* {
+    font-family: DejaVuSansM Nerd Font, Mononoki Nerd Font, Roboto, Helvetica, Arial, sans-serif;
+}
+
+window#waybar {
+    font-weight: bold;
+    font-size: 12px;
+    background-color: transparent;
+    color: @main-color;
+    padding: 0px;
+    margin: 0px;
+}
+
+button {
+    border: none;
+    border-radius: 0;
+}
+
+/* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
+button:hover {
+    background: inherit;
+}
+
+#workspaces button {
+    margin: 0px;
+    /* was 0 5px but for some reason it fucked up */
+    padding: 0 0px;
+    color: @grey;
+    background-color: transparent;
+    transition: padding 0.1s, font-size 0.2s;
+    transition-timing-function: ease-out;
+}
+
+#workspaces button:hover {
+    font-size: 14px;
+}
+
+#workspaces button.empty {
+    color: transparent;
+}
+
+#workspaces button.active {
+    color: @main-color;
+    font-size: 14px;
+    margin-bottom: -2px;
+    /* background-color: #c4b392; */
+    padding-left: 7px;
+    padding-right: 7px;
+    /* border-radius: 600; */
+    /* box-shadow: inset 0 -5px #c4b392; */
+}
+
+#workspaces button.special {
+    color: @alternative;
+    font-size: 11px;
+    /* padding-right: 17px; */
+}
+
+#workspaces button.special:hover {
+    font-size: 16px;
+    /* padding-right: 7px; */
+}
+
+#workspaces button.special.active {
+    color: @urgent;
+    font-size: 16px;
+    margin-bottom: -2px;
+    padding-left: 7px;
+    padding-right: 7px;
+}
+
+#workspaces button.urgent {
+    color: @urgent;
+    box-shadow: inset 0 -5px @urgent;
+}
+
+.modules-left {
+    padding: 0 0px;
+    /* border: 2px solid #c4b392; */
+    color: @main-color;
+}
+
+/* scary to modify */
+.modules-center {
+    margin-right: 10px;
+    margin-left: 10px;
+    padding: 0 15px;
+    font-weight: bolder;
+    border-radius: 7px 7px 7px 7px;
+    color: @main-color;
+    background-color: @background-t;
+}
+
+.modules-right {
+    padding: 0 0px;
+    color: @main-color;
+}
+
+#custom-logo {
+    padding: 0 2px 0 7px;
+    background-color: @background-t;
+    border-radius: 7px 7px 7px 7px;
+    font-size: 12px;
+    background-image: url("/usr/share/icons/hicolor/64x64/apps/void-logo-notext.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 16px;
+}
+
+#window,
+#workspaces {
+    margin: 0 0px;
+    margin-top: -2px;
+    margin-bottom: -2px;
+}
+
+#workspaces {
+    background-color: @background-t;
+    border-radius: 10px 10px 10px 10px;
+}
+
+/* If workspaces or custom logo is the leftmost module, omit left margin and unround leftside corners */
+.modules-left > widget:first-child > #custom-logo,
+.modules-left > widget:first-child > #workspaces {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    margin-left: 0;
+}
+
+window#waybar.empty .modules-center {
+    background-image: none;
+    background-color: transparent;
+    color: transparent;
+}
+
+window#waybar.fullscreen .modules-center {
+    background-image: linear-gradient(170deg, @main-color, @main-color, @urgent);
+    background-position: 0px 0px;
+    color: @background;
+}
+
+/* If tray is the rightmost module, omit right margin */
+.modules-right > widget:last-child > #tray {
+    padding-right: 5px;
+    margin-right: 0;
+    border-radius: 7px 0px 0px 7px;
+}
+
+#memory,
+#custom-keyboard,
+#language,
+#clock,
+#tray,
+#pulseaudio {
+    /* background-color: #c4b392; */
+    padding: 0 10px;
+    background-color: @background-t;
+    border-radius: 7px 7px 7px 7px;
+    color: @main-color;
+}
+

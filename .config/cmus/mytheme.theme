@@ -14,9 +14,9 @@
 ##### Common User Interface Components #########################################
 # Default text color
 # set color_win_fg=19
-set color_win_fg=default
 
 # Overall background color
+set color_win_fg=default
 set color_win_bg=default
 
 # Command-line colors
@@ -39,11 +39,11 @@ set color_win_title_fg=lightyellow
 set color_win_title_bg=black
 ##### Playing File Colors ######################################################
 # Unselected currently playing track's text
-set color_win_cur=lightblue
+set color_win_cur=blue
 
 # Active selection for currently playing track
 set color_win_cur_sel_fg=black
-set color_win_cur_sel_bg=lightblue
+set color_win_cur_sel_bg=blue
 
 # Inactive selection for currently playing track
 set color_win_inactive_cur_sel_fg=default
@@ -52,7 +52,7 @@ set color_win_inactive_cur_sel_bg=default
 ##### Non-Playing File Colors ##################################################
 # Active selection
 set color_win_sel_fg=black
-set color_win_sel_bg=white
+set color_win_sel_bg=yellow
 
 # Inactive selection
 set color_win_inactive_sel_fg=yellow
