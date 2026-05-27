@@ -2,35 +2,84 @@
 source "%val{config}/plugins/plug.kak/rc/plug.kak"
 plug "andreyorst/plug.kak" noload
 
+plug "andreyorst/langmap.kak" config %{
+    # add needed extra layout, for example Russian 'йцукен'
+    set-option global langmap %opt{langmap_ru_jcuken}
+} demand "langmap" %{
+    # optional: mappings to toggle langmap
+    map -docstring "toggle layout" global normal '<c-l>' ':      toggle-langmap<ret>'
+    map -docstring "toggle layout" global insert '<c-l>' '<a-;>: toggle-langmap<ret>'
+    map -docstring "toggle layout" global prompt '<c-l>' '<a-;>: toggle-langmap prompt<ret>'
+}
+
 plug "occivink/kakoune-buffer-switcher" config %{
-    map global space a ':buffer-switcher<ret>' -docstring 'buffer switcher'
+    map global user a ':buffer-switcher<ret>' -docstring 'buffer switcher'
     # putting it here because of disabled tabs plugin
     # set-option global modelinefmt '{{context_info}} │ {StatusLineInfo}%val{bufname}{StatusLine} │ %val{cursor_line}:%val{cursor_char_column} │ %val{client}@[%val{session}] │ {{mode_info}}'
-    set-option global modelinefmt '{{context_info}} | {StatusLineInfo}%val{bufname}{StatusLine} | %val{cursor_line}:%val{cursor_char_column} | %val{client}@[%val{session}] | {{mode_info}} '
-    map global space q ':delete-buffer<ret>'
-    map global space Q ':delete-buffer!<ret>'
-    set-face global BufferSwitcherCurrent "%opt{c_green},default+b"
+    # set-option global modelinefmt '{{context_info}} | {StatusLineInfo}%val{bufname}{StatusLine} | %val{cursor_line}:%val{cursor_char_column} [%sh{echo "$kak_cursor_line * 100 / $kak_buf_line_count" | bc}%%] | %val{client}@[%val{session}] | {{mode_info}} (%opt{langmap_current_lang}) '
+    set-option global modelinefmt '{{context_info}} | {StatusLineInfo}%val{bufname}{StatusLine} | %val{cursor_line}:%val{cursor_char_column} | %val{client}@[%val{session}] | {{mode_info}} (%opt{langmap_current_lang}) '
+    map global user q ':delete-buffer<ret>'
+    map global user Q ':delete-buffer!<ret>'
+    set-face global BufferSwitcherCurrent "%opt{yellow},default+b"
+}
+
+plug "https://github.com/Delapouite/kakoune-registers" config %{
+    # map global insert <a-r> '<a-;>:info-registers<ret>i<c-r>'
+    map global normal <a-r> ':info-registers<ret>'
+}
+
+# my utils
+# plug "hotsadboi" load-path "%val{config}/plugins/hotsadboi" config %{
+plug "hotsadboi" config %{
+    map global normal '<c-u>' ":custom-half-a-page-up<ret>"
+    map global normal '<c-d>' ":custom-half-a-page-down<ret>"
+    # map global normal '<c-p>' '<a-[>p'
+    # map global normal '<c-s-p>' '<a-{>p'
+    # map global normal '<c-n>' ']p'
+    # map global normal '<c-s-n>' '\}p'
+
+    # easier way to move between brackets
+    map global normal '<F1>' ':prev-matching-pair<ret>'
+    map global normal '<F2>' ':next-matching-pair<ret>'
+    map global normal '<s-F1>' ':extend-with-prev-matching-pair<ret>'
+    map global normal '<s-F2>' ':extend-with-next-matching-pair<ret>'
+
+    # drag selections up and down
+    map global normal <c-k> ':drag-up<ret>'
+    map global normal <c-j> ':drag-down<ret>' # <- works because <c-j> is <ret>
+    map global normal <ret> ':drag-down<ret>' # <- works because <c-j> is <ret>
+    map global normal <s-d> ':dup-line<ret>'
+
+    map global user / ':switch-search-highlight<ret>'
+
+    map global normal <s-a> ':indent-and-append<ret>'
+    map global user s ':scratch-buffer<ret>'
+
+    map global object h '<esc>:hump<ret>'
+    map global normal <c-s-e> ":hump-extend-end<ret>"
+    map global normal <c-s-w> ":hump-extend-word<ret>"
+    map global normal <c-s-b> ":hump-extend-back<ret>"
+    map global normal <c-e> ":hump-end<ret>"
+    map global normal <c-w> ":hump-word<ret>"
+    map global normal <c-b> ":hump-back-hsb<ret>"
+
+    map global normal '=' ":autoindent<ret>"
+
+    map global user l ":tmux-split-vertical<ret>"
+    map global user j ":tmux-split-horizontal<ret>"
+    map global user i ":selection-info<ret>"
+
+    random-name
 }
 
 # highlight the line with the main selection
 plug "insipx/kak-crosshairs" config %{
-    set-face global crosshairs_line "default,%opt{c_dark}"
-    cursorline
+    set-face global crosshairs_line "default,%opt{gray_0}"
+    # cursorline
 }
 
-# plug "andreyorst/tagbar.kak"
-plug "andreyorst/tagbar.kak" defer "tagbar" %{
-    set-option global tagbar_sort false
-    set-option global tagbar_size 40
-    set-option global tagbar_display_anon false
-} config %{
-    # if you have wrap highlighter enamled in you configuration
-    # files it's better to turn it off for tagbar, using this hook:
-    hook global WinSetOption filetype=tagbar %{
-        remove-highlighter buffer/softwrap
-        # you can also disable rendering whitespaces here, line numbers, and
-        # matching characters
-    }
+plug "raiguard/kak-harpoon" config %{
+    harpoon-add-bindings
 }
 
 # spaces instead of tabs
@@ -41,44 +90,51 @@ plug "andreyorst/smarttab.kak" defer smarttab %{
     hook global WinSetOption filetype=(python|ocaml|kak|v) expandtab
 }
 
-# preview kakoune palette
-plug "Delapouite/kakoune-palette"
-
 plug "occivink/kakoune-expand" config %{
     declare-user-mode expand
-    map global space <space> ':expand; enter-user-mode -lock expand<ret>' -docstring 'enter expand mode'
+    map global expand <c-[> '<esc>'
     map global expand <space> ':expand<ret>' -docstring 'expand more'
-}
-
-# phantom selection
-plug "occivink/kakoune-phantom-selection" config %{
-    declare-user-mode phantom
-    map global normal <a-p> ':enter-user-mode phantom<ret>'
-    map global normal <a-P> ':enter-user-mode -lock phantom<ret>'
-    map global phantom a ':phantom-selection-add-selection<ret>' -docstring "add current selections into phantom selections"
-    map global phantom <percent> ':phantom-selection-select-all<ret>' -docstring "select EVERY phantom selection"
-    map global phantom d ':phantom-selection-clear<ret>' -docstring "remove current phantom selection"
-    map global phantom , ':phantom-selection-select-all; phantom-selection-clear<ret>' -docstring "remove all phantom selections"
-    map global phantom n ':phantom-selection-iterate-next<ret>' -docstring "jump to next phantom selection"
-    map global phantom p ':phantom-selection-iterate-prev<ret>' -docstring "jump to previous phantom selection"
-    set-face global PhantomSelection "%opt{c_black},%opt{c_comment}+F"
+    map global user <space> ':expand; enter-user-mode -lock expand<ret>' -docstring 'enter expand mode'
 }
 
 # vlang support
 plug "antono2/vlang.kak"
 
 plug "gustavo-hms/luar"
-plug "gustavo-hms/objetiva" %{
+plug "gustavo-hms/objetiva" config %{
     require-module objetiva
-    # map global object x '<a-;>objetiva-line<ret>' -docstring line
-    # map global object m '<a-;>objetiva-matching<ret>' -docstring matching
-    map global object <minus> '<a-;>objetiva-case<ret>' -docstring case
-    map global normal <c-e> ': objetiva-case-move<ret>'
-    map global normal <c-s-e> ': objetiva-case-expand<ret><esc>'
-    map global normal <c-w> ': objetiva-case-move<ret>'
-    map global normal <c-s-w> ': objetiva-case-expand<ret><esc>'
-    map global normal <c-b> ': objetiva-case-move-previous<ret>'
-    map global normal <c-s-b> ': objetiva-case-expand-previous<ret><esc>'
+    # map global object h '<a-;>objetiva-case<ret>' -docstring case
+    map global object m '<a-;>objetiva-matching<ret>' -docstring matching
+    # map global normal <c-b> ':objetiva-case-move-previous<ret>'
+    # map global normal <c-e> ':objetiva-case-move<ret>'
+    # map global normal <c-w> ':objetiva-case-move<ret>'
+    # map global normal <c-s-b> ':objetiva-case-expand-previous<ret>'
+    # map global normal <c-s-e> ':objetiva-case-expand<ret>'
+    # map global normal <c-s-w> ':objetiva-case-expand<ret>'
+    declare-option -hidden str humps_saved_selection ""
+    define-command -hidden -override hump-forward %{
+        set local humps_saved_selection %val{selection_desc}
+        objetiva-case-move
+        try %{
+            execute-keys 'Z<c-o><c-o>z<a-:><esc>'
+        } catch %{
+            select %opt{humps_saved_selection}
+            echo -markup "{Error}no selections remaining"
+        }
+    }
+    define-command -hidden -override hump-back %{
+        set local humps_saved_selection %val{selection_desc}
+        objetiva-case-move-previous
+        try %{
+            execute-keys 'Z<c-o><c-o>z<a-:><a-;><esc>'
+        } catch %{
+            select %opt{humps_saved_selection}
+            echo -markup "{Error}no selections remaining"
+        }
+    }
+    # map global normal <c-b> ':hump-back<ret>'
+    # map global normal <c-e> ':hump-forward<ret>'
+    # map global normal <c-w> ':hump-forward<ret>'
 }
 
 # surround (almost like helix but worse) (for some reason works)
@@ -101,7 +157,11 @@ plug "Delapouite/kakoune-select-view" config %{
 }
 
 # unified objects
-plug "Delapouite/kakoune-text-objects"
+plug "Delapouite/kakoune-text-objects" config %{
+    map global normal q ':enter-user-mode selectors<ret>'
+    map global normal <a-q> 'q'
+}
+plug "occivink/kakoune-vertical-selection"
 
 # lsp
 plug "kak-lsp/kak-lsp" do %{
@@ -122,7 +182,7 @@ plug "kak-lsp/kak-lsp" do %{
         }
     }
 
-    hook -group lsp-filetype-vlang global BufSetOption filetype=odin %{
+    hook -group lsp-filetype-odin global BufSetOption filetype=odin %{
         set-option buffer lsp_servers %{
             [ols]
             command = "/home/hotsadboi/thirdparty/ols/ols"
@@ -136,6 +196,7 @@ plug "kak-lsp/kak-lsp" do %{
         }
     }
 }
+
 # hooks for kak-lsp
 hook global WinSetOption filetype=(ocaml) %{
     source "%val{config}/ocaml.kak"
@@ -143,11 +204,9 @@ hook global WinSetOption filetype=(ocaml) %{
     set-option window indentwidth 2
     set-option window softtabstop 2
 }
-hook global WinSetOption filetype=(c|go|rust|haskell|ocaml) %{
+hook global BufSetOption filetype=(c|go|rust|haskell|ocaml|v|odin) %{
     # lsp-enable-window
-    expandtab
-}
-hook global WinSetOption filetype=(v|odin) %{
+    suplocon-enable-column
     expandtab
 }
 
@@ -158,28 +217,25 @@ plug 'alexherbo2/auto-pairs.kak' config %{
 
 plug 'ABuffSeagull/kakoune-vue' noload
 
-# my utils
-# plug "hotsadboi" load-path "%val{config}/plugins/hotsadboi" config %{
-plug "hotsadboi" config %{
-    map global normal '<c-u>' ":custom-third-a-page-up<ret>"
-    map global normal '<c-d>' ":custom-third-a-page-down<ret>"
-
-    # easier way to move between brackets
-    map global normal '<F1>' ':prev-matching-pair<ret>'
-    map global normal '<F2>' ':next-matching-pair<ret>'
-    map global normal '<s-F1>' ':extend-with-prev-matching-pair<ret>'
-    map global normal '<s-F2>' ':extend-with-next-matching-pair<ret>'
-
-    # drag selections up and down
-    map global normal <c-k> ':drag-up<ret>'
-    map global normal <c-j> ':drag-down<ret>' # <- works because <c-j> is <ret>
-    map global normal <ret> ':drag-down<ret>' # <- works because <c-j> is <ret>
-
-    random-name
-}
-
 plug "ex.kak" config %{
-    map global space e ':ls<ret>' -docstring 'open ex buffer'
+    map global user e ':ls<ret>' -docstring 'open ex buffer'
 }
 
-plug "csharp.kak"
+plug "Yukaii/bookmarks.kak" config %{
+    declare-user-mode mark
+
+    map global user b ':enter-user-mode mark<ret>'
+    map global mark l ':bookmarks-show-list<ret>'
+    map global mark a ':bookmarks-add-prompt<ret>'
+    map global mark 1 ':bookmarks-nav 1<ret>'
+    map global mark 2 ':bookmarks-nav 2<ret>'
+    map global mark 3 ':bookmarks-nav 3<ret>'
+    map global mark 4 ':bookmarks-nav 4<ret>'
+    map global mark 5 ':bookmarks-nav 5<ret>'
+    map global mark 6 ':bookmarks-nav 6<ret>'
+    map global mark 7 ':bookmarks-nav 7<ret>'
+    map global mark 8 ':bookmarks-nav 8<ret>'
+    map global mark 9 ':bookmarks-nav 9<ret>'
+}
+
+plug "csharp" noload
