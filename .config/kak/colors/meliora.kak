@@ -38,7 +38,8 @@ set-face global function   "%opt{c_blue}"
 set-face global string     "%opt{c_green}"
 set-face global keyword    "%opt{c_red}"
 set-face global operator   "%opt{c_white_0}"
-set-face global attribute  "%opt{c_white_2}"
+# set-face global attribute  "%opt{c_white_2}"
+set-face global attribute  "%opt{c_khaki}"
 set-face global bracket    "%opt{c_white_0}"
 set-face global argument   "%opt{c_orange}"
 set-face global comma      "%opt{c_white_0}"
@@ -70,8 +71,18 @@ declare-option str insert_psel       "default,rgb:454960"
 declare-option str normal_ssel       "default,rgb:483837"
 declare-option str insert_ssel       "default,rgb:373848"
 
+
+# Highlight matching character
+set-face global MatchingChar       "%opt{c_white_0},default+fbu"
+add-highlighter -override global/matching show-matching
+
 # Hightlight trailing spaces
 add-highlighter -override global/trails regex \h+$ 0:trailing
+
+# Show indentation
+set-face global Whitespace         "%opt{c_gray_2},default+b"
+set-face global WhitespaceIndent   Whitespace
+add-highlighter -override global/indents show-whitespaces -lf ' ' -spc ' ' -nbsp ' ' -tab '⇒' -tabpad ' ' -indent '▏'
 
 # Display line numbers
 add-highlighter -override global/numbers number-lines -relative -cursor-separator '└' -hlcursor
@@ -79,33 +90,41 @@ add-highlighter -override global/numbers number-lines -relative -cursor-separato
 # Builtin faces                       FG              BG
 set-face global BufferPadding      "%opt{c_gray_1},default"
 set-face global Default            "%opt{c_white_0},default"
+# set-face global Default            "%opt{c_white_0},%opt{c_black}"
+
 set-face global PrimarySelection   "%opt{normal_psel}+b"
-set-face global SecondarySelection "%opt{normal_ssel}+b"
 set-face global PrimaryCursor      "%opt{normal_cursor}"
-set-face global SecondaryCursor    "%opt{c_dark},%opt{c_white_3}+g"
 set-face global PrimaryCursorEol   "%opt{normal_cursor_eol}"
+
+set-face global SecondarySelection "%opt{normal_ssel}+b"
+set-face global SecondaryCursor    "%opt{c_dark},%opt{c_white_3}+g"
 set-face global SecondaryCursorEol "%opt{c_dark},%opt{c_white_3}+g"
+
 set-face global LineNumbers        "%opt{c_white_3},%opt{c_black}"
 set-face global LineNumberCursor   "%opt{c_white_2},%opt{c_black}"
 set-face global LineNumbersWrapped "%opt{c_black},%opt{c_black}"
+
 set-face global MenuBackground     "%opt{c_white_2},%opt{c_gray_1}"   #unselected
 set-face global MenuForeground     "%opt{c_dark},%opt{c_khaki}" #selected
 set-face global MenuInfo           "%opt{c_white_1},%opt{c_gray_1}+b"
+
 set-face global Information        "%opt{c_yellow},%opt{c_gray_1}" #that clippy thing
 set-face global Error              "%opt{c_black},%opt{c_red}+b"
+
 set-face global StatusLine         "%opt{c_white_2},%opt{c_gray_1}"
 set-face global StatusLineMode     "%opt{c_gray_1},%opt{c_yellow}"
 set-face global StatusLineInfo     "%opt{c_khaki},%opt{c_gray_1}"
 set-face global StatusLineValue    "%opt{c_blue},%opt{c_gray_1}"
 set-face global StatusCursor       "%opt{c_dark},%opt{c_white_1}"
+
 set-face global Prompt             "%opt{c_orange},%opt{c_black}"
-# set-face global MatchingChar       "%opt{c_blue},%opt{c_black}"
-set-face global MatchingChar       "%opt{c_white_0},default+fbu"
-set-face global Whitespace         "%opt{c_white_sec},%opt{c_black}"
 set-face global WrapMarker Whitespace
 
-add-highlighter -override global/matching show-matching
-# Different mode hooks
+# Scrollbar (experimental)
+set-option -add global ui_options terminal_scroll_bar=true
+set-face global ScrollBarGutter    "%opt{c_yellow},default"
+set-face global ScrollBarHandle    "%opt{c_white_3},default+r"
+
 # when entering normal mode
 hook -group meliora-theme global ModeChange pop:insert:normal %{
     add-highlighter -override global/trails regex \h+$ 0:trailing

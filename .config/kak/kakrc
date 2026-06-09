@@ -1,4 +1,4 @@
-colorscheme meliora
+colorscheme suplocon
 
 # evaluate-commands %sh{if [ -t 0 ]; then echo "declare-option str res 'colorscheme meliora'"; else echo "declare-option str res 'running in TTY'"; fi}
 
@@ -11,31 +11,60 @@ map global insert <c-e> '<esc>glli'
 # map global insert <c-k> '<a-;>k'
 map global normal Y     '<a-|>wl-copy<ret>:echo -markup "{Information}yanked %val{selection_count} selections to system clipboard"<ret>'
 
+# TODO: make hover and goto commands work with ctags or lsp on she same keys. create an option, wrapper commands for them and a switcher
 # user menu inspired by my helix config
 declare-user-mode space
-map global space A     ':lsp-code-actions<ret>'                                                               -docstring 'code action (LSP)'
-map global space k     ':lsp-hover<ret>'                                                                      -docstring 'show info (LSP)'
-map global space K     ':lsp-hover-buffer<ret>'                                                               -docstring 'show info in a buffer (LSP)'
-map global space r     ':lsp-rename-prompt<ret>'                                                              -docstring 'rename (LSP)'
-map global space d     ':lsp-diagnostics<ret>'                                                                -docstring 'diagnostic (LSP)'
-map global space w     ':lsp-diagnostic-object --include-warnings<ret>'                                       -docstring 'next error/warning (LSP)'
-# map global space f     ':format-buffer<ret>'                                                                  -docstring 'format current buffer (LSP)'
-map global space <a-R> ':lsp-restart<ret>' -docstring 'restart lsp client (LSP)'
-map global space O     ':reverse-selections<ret>'                                                             -docstring 'reverse selections'
-map global space o     ':reverse-chars<ret>'                                                                  -docstring 'reverse chars'
-map global space <c-s> ':set global autoinfo command|onkey<ret>'                                              -docstring 'show info box'
-map global space <c-h> ':set global autoinfo command<ret>'                                                    -docstring 'hide info box'
-map global space d     '<a-i>w:ctags-search<ret>'                                                             -docstring 'ctags go to definition'
-map global space c     ':comment-line<ret>'                                                                   -docstring 'comment line'
-map global space C     ':comment-block<ret>'                                                                  -docstring 'comment block'
-map global space |     '|bash<ret>'                                                                           -docstring 'pipe selected text into shell'
-map global space <ret> "|bash -c 'read e; echo $((e))'<ret>"                                                  -docstring 'evaluate arithmetic expression'
-map global normal '<space>' ':enter-user-mode space<ret>'
+map global user A     ':lsp-code-actions<ret>'                                                               -docstring 'code action (LSP)'
+map global user k     ':lsp-hover<ret>'                                                                      -docstring 'show info (LSP)'
+map global user K     ':lsp-hover-buffer<ret>'                                                               -docstring 'show info in a buffer (LSP)'
+map global user r     ':lsp-rename-prompt<ret>'                                                              -docstring 'rename (LSP)'
+map global user d     ':lsp-diagnostics<ret>'                                                                -docstring 'diagnostic (LSP)'
+map global user w     ':lsp-diagnostic-object --include-warnings<ret>'                                       -docstring 'next error/warning (LSP)'
+# map global user f     ':format-buffer<ret>'                                                                  -docstring 'format current buffer (LSP)'
+map global user <a-R> ':lsp-restart<ret>' -docstring 'restart lsp client (LSP)'
+map global user O     ':reverse-selections<ret>'                                                             -docstring 'reverse selections'
+map global user o     ':reverse-chars<ret>'                                                                  -docstring 'reverse chars'
+map global user <c-s> ':set global autoinfo command|onkey<ret>'                                              -docstring 'show info box'
+map global user <c-h> ':set global autoinfo command<ret>'                                                    -docstring 'hide info box'
+map global user d     '<a-i>w:ctags-search<ret>'                                                             -docstring 'ctags go to definition'
+map global user c     ':comment-line<ret>'                                                                   -docstring 'comment line'
+map global user C     ':comment-block<ret>'                                                                  -docstring 'comment block'
+map global user |     '|bash<ret>'                                                                           -docstring 'pipe selected text into shell'
+# map global user <ret> "|bash -c 'read e; echo $((e))'<ret>"                                                  -docstring 'evaluate arithmetic expression'
+map global user <ret> "| sed 's/$/\n/' | bc <ret>"                                                        -docstring 'evaluate arithmetic expression'
+# map global user L     ':echo "selected lines: %sh{echo "$kak_selection" | wc -l}<ret>"'
+map global user f     ':format-selections<ret>'
+map global user F     ':format-buffer<ret>'
+map global user m     ':make<ret>'
+map global user p     ':enter-user-mode -lock paragraph<ret>' -docstring 'enter paragraph mode'
+# map global user M     ':set buffer makecmd '
+map global normal '<space>' ':enter-user-mode user<ret>'
+
+declare-user-mode paragraph
+map global paragraph j ']p'
+map global paragraph J '}p'
+map global paragraph <a-j> '<a-]>p'
+map global paragraph <a-J> '<a-}>p'
+map global paragraph k '[p'
+map global paragraph K '{p'
+map global paragraph <a-k> '<a-[>p'
+map global paragraph <a-K> '<a-{>p'
+map global paragraph i '<a-i>p'
+map global paragraph o '<a-a>p'
+map global paragraph v 'vc'
+map global paragraph y 'y'
+map global paragraph Y '<a-|>wl-copy<ret>:echo -markup "{Information}yanked %val{selection_count} selections to system clipboard"<ret>'
+map global paragraph <minus> '_'
+map global paragraph <c-[> '<esc>'
+# map global paragraph q '<esc>'
+
+map global normal <c-]> '<a-i>w:ctags-search<ret>'
 
 # tag menu
 declare-user-mode tags
-map global tags a ':surround-with-tag<ret>' -docstring 'add surrounding tag'
-map global tags s ':select-surrounding-tag<ret>' -docstring 'select surrounding tag'
+map global tags s ':surround-with-tag<ret>' -docstring 'add surrounding tag'
+map global tags m ':select-surrounding-tag<ret>' -docstring 'select surrounding tag'
+map global tags d ':select-surrounding-tag<ret><a-d><a-u>' -docstring 'delete surrounding tag'
 map global tags c ':change-surrounding-tag<ret>' -docstring 'change surrounding tag'
 map global normal <c-t> ':enter-user-mode tags<ret>' -docstring 'enter tags mode'
 
@@ -43,30 +72,106 @@ map global normal <c-t> ':enter-user-mode tags<ret>' -docstring 'enter tags mode
 source "%val{config}/plugs.kak"
 
 # some editor options
-set-option global scrolloff 7,7
+set-option global scrolloff 7,0
 set-option global indentwidth 4
 set-option global tabstop 4
 set-option global autocomplete prompt
 set-option global autoinfo command
 
 # ctrl+w to delete word in insert mode
-map global insert <c-w> '<a-;>b<a-;><a-d>'
+# map global insert <c-w> '<a-;>b<a-;><a-d>'
+map global insert <c-w> '<esc>b<a-d>:<esc>i'
+map global insert <a-d> '<esc>e<a-d>:<esc>i'
 
 # vim-like bindings to decrease / increase a number
 map global normal <c-x> '<a-i>n|read num; if [ "$num" != "-" ]; then num=$(($num-1)); fi; echo $num<ret>'
 map global normal <c-a> '<a-i>n|read num; if [ "$num" != "-" ]; then num=$(($num+1)); fi; echo $num<ret>'
 
+# map global prompt <c-n> '<tab>'
+# map global prompt <c-p> '<s-tab>'
+map global prompt <c-j> '<tab>'
+map global prompt <c-k> '<s-tab>'
+map global prompt <c-a-n> '<c-n>'
+map global prompt <c-a-p> '<c-p>'
+map global insert <c-[> '<esc>'
+map global normal <c-v> 'vv'
+map global insert <c-v> '<a-;>vv'
+map global insert <c-o> '<esc>o'
+map global insert <c-s-o> '<esc><s-o>'
+
 # softwrap long lines
-hook global WinSetOption filetype=* %{
-    add-highlighter buffer wrap -word -indent
-}
+# hook global WinSetOption filetype=.* %{
+#     add-highlighter buffer/wrap wrap -word -indent
+# }
 
 # hook global BufSetOption extra_word_chars=.+  %{
 #     set-option -remove buffer extra_word_chars '_' '-'
 # }
 
+# map global normal <c-.> ']p'
+# map global normal <c-,> '[p'
+# map global normal <c-gt> '}p'
+# map global normal <c-lt> '{p'
+
+map global normal <down>   ']p'
+map global normal <up>     '[p'
+map global normal <s-down> '}p'
+map global normal <s-up>   '{p'
+
 # more sensible *make* bindings
+# set-option global make_error_pattern '^([^:\n]+)[:\(](\d+):(?:(\d+)[:\)])? [^\n]*(?:[Ff]atal )?[Ee]rror:([^\n]+)?' # works with odin-style errors, too
+set-option global make_error_pattern '^([^:\n]+)[:\(](\d+):(?:(\d+)[:\)])?(?: [^\n]*(?:[Ff]atal )?[Ee]rror:)? ([^\n]+)?'
 hook global BufSetOption filetype=make %{
-    map buffer space w ':jump-select-next<ret>:set buffer jump_current_line %val{cursor_line}<ret>'
+    map global normal <c-n> ':make-next-error<ret>'
+    map global normal <c-p> ':make-previous-error<ret>'
+    declare-option str search_before_make "%reg{slash}"
+    define-command -hidden -override make-jump-to-next %{
+        set-option global search_before_make "%reg{slash}"
+        set-register slash "%opt{make_error_pattern}"
+        execute-keys 'n'
+        set-register slash "%opt{search_before_make}"
+    }
+    define-command -hidden -override make-jump-to-prev %{
+        set-option global search_before_make "%reg{slash}"
+        set-register slash "%opt{make_error_pattern}"
+        execute-keys '<a-n>'
+        set-register slash "%opt{search_before_make}"
+    }
+    unmap buffer normal <c-n>
+    unmap buffer normal <c-p>
+    map buffer normal <c-n> ':make-jump-to-next<ret>'
+    map buffer normal <c-p> ':make-jump-to-prev<ret>'
+    # map buffer normal <c-p> ':jump-select-previous<ret>:set buffer jump_current_line %val{cursor_line}<ret>Z<c-o>z'
     map buffer normal <ret> ':jump<ret>'
 }
+hook global BufClose '\*make\*' %{
+    unmap global normal <c-n>
+    unmap global normal <c-p>
+    unmap buffer normal <c-n>
+    unmap buffer normal <c-p>
+}
+# this could clash with make?
+hook global BufSetOption filetype=grep %{
+    unmap buffer normal <c-n>
+    unmap buffer normal <c-p>
+    map global normal <c-n> ':grep-next-match<ret>'
+    map global normal <c-p> ':grep-previous-match<ret>'
+    map buffer normal <ret> ':jump<ret>'
+}
+hook global BufClose '\*make\*' %{
+    unmap global normal <c-n>
+    unmap global normal <c-p>
+    unmap buffer normal <c-n>
+    unmap buffer normal <c-p>
+}
+
+hook global BufSetOption filetype=odin %{
+    set -add buffer ctagsfiles "/home/hotsadboi/thirdparty/odin/tags"
+}
+hook global BufSetOption filetype=go %{
+    set -add buffer ctagsfiles "/home/hotsadboi/thirdparty/go/tags"
+}
+
+# experimental
+# map global normal j ':exec %{:reg @ gd<lt>ret<gt>} %val{count} q<ret>'
+# map global normal k ':exec %{:reg @ gu<lt>ret<gt>} %val{count} q<ret>'

@@ -1,11 +1,11 @@
 hook global ClientCreate .* %{
-    eval %sh{
-        bash /home/hotsadboi/.config/kak/plugins/hotsadboi/names.sh client $kak_client
+    evaluate-commands %sh{
+        bash /home/hotsadboi/.config/kak/plugins/hotsadboi/names.sh client $kak_clients
     }
 }
 
-def -hidden -override random-name %{
-    eval %sh{
+define-command -hidden -override random-name %{
+    evaluate-commands %sh{
         bash /home/hotsadboi/.config/kak/plugins/hotsadboi/names.sh session $kak_session
     }
 }

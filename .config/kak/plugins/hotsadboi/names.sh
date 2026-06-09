@@ -61,15 +61,20 @@ names=(
 )
 
 if [[ " ${names[*]} " =~ " $2 " ]]; then
-    echo "echo -markup '{Error}$1 is already randomized'"
+    echo "echo -markup \"{Error}$1 is already randomized\""
     exit 0
 fi
 
-num_strings=${#names[@]}
-random_index=$((RANDOM % num_strings))
-name=${names[$random_index]}
-if [[ $1 == "client" ]]; then
+sessions="$(kak -l 2>/dev/null)"
+num_strings="${#names[@]}"
+random_index="$((RANDOM % num_strings))"
+name="${names[$random_index]}"
+if [[ "$1" == "client" ]]; then
     echo "rename-client $name"
-elif [[ $1 == "session" ]]; then
+elif [[ "$1" == "session" ]]; then
+    while [[ "$name" == "${#sessions[*]}" ]]; do
+        random_index="$((RANDOM % num_strings))"
+        name="${names[$random_index]}"
+    done
     echo "rename-session $name"
 fi
